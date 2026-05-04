@@ -627,6 +627,7 @@ This repository contains a GitHub Actions workflow (`.github/workflows/publish.y
 |---------|--------|-------------|
 | Push to `main` branch | **TestPyPI** | `testpypi` |
 | Push a tag `v*.*.*` | **PyPI** | `pypi` |
+| **GitHub Release published** | **PyPI + TestPyPI** | `pypi` / `testpypi` |
 | Manual `workflow_dispatch` | You choose | `testpypi` or `pypi` |
 
 ### Setup (one-time)
