@@ -8,6 +8,7 @@ import sys
 import socket
 import json
 import logging
+from typing import Any
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 
@@ -207,8 +208,8 @@ def _patch_dns_resolution(sh):
         sh.session.mount("http://", adapter)
 
 
-def create_scihub_instance():
-    sh = SciHub()
+def create_scihub_instance() -> Any:
+    sh: Any = SciHub()
     sh.available_base_url_list = WORKING_SCIHUB_DOMAINS[:]
     sh.timeout = 30
     
@@ -234,7 +235,7 @@ def create_scihub_instance():
     
     return sh
 
-def _fetch_single_domain(sh, identifier, domain):
+def _fetch_single_domain(sh: Any, identifier: str, domain: str) -> dict:
     """Fetch paper from a specific domain without retry logic."""
     from scihub import logger as scihub_logger
     import logging
@@ -293,9 +294,9 @@ def _fetch_single_domain(sh, identifier, domain):
     raise Exception("All retries exhausted")
 
 
-def search_paper_by_doi(doi):
+def search_paper_by_doi(doi: str) -> dict:
     """Search for a paper on Sci-Hub by DOI."""
-    sh = create_scihub_instance()
+    sh: Any = create_scihub_instance()
     
     for domain_idx, domain in enumerate(WORKING_SCIHUB_DOMAINS, 1):
         try:
@@ -398,8 +399,8 @@ def search_papers_by_keyword(keyword, num_results=10):
     
     return papers
 
-def download_paper(pdf_url, output_path):
-    sh = create_scihub_instance()
+def download_paper(pdf_url: str, output_path: str) -> bool:
+    sh: Any = create_scihub_instance()
     try:
         response = sh.session.get(pdf_url, verify=False, timeout=sh.timeout)
         response.raise_for_status()
