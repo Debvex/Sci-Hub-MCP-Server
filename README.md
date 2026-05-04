@@ -616,6 +616,73 @@ User / AI Assistant
 
 ---
 
+## Publishing to PyPI / TestPyPI
+
+This repository contains a GitHub Actions workflow (`.github/workflows/publish.yml`) that builds and publishes the package automatically using **trusted publishing** (OIDC) — no long-lived API tokens stored in GitHub secrets.
+
+### How it works
+
+| Trigger | Target | Environment |
+|---------|--------|-------------|
+| Push to `main` branch | **TestPyPI** | `testpypi` |
+| Push a tag `v*.*.*` | **PyPI** | `pypi` |
+| Manual `workflow_dispatch` | You choose | `testpypi` or `pypi` |
+
+### Setup (one-time)
+
+You must configure **trusted publishing** on both PyPI and TestPyPI before the workflow can upload anything.
+
+#### 1. TestPyPI
+
+1. Create an account at https://test.pypi.org/
+2. Go to **Account Settings → Publishing**
+3. Click **Add a new pending publisher**
+4. Fill in:
+   - **PyPI Project Name**: `sci-hub-mcp-server`
+   - **Owner**: `Debvex`
+   - **Repository name**: `Sci-Hub-MCP-Server`
+   - **Workflow name**: `publish.yml`
+   - **Environment name**: `testpypi`
+5. Click **Add**
+
+#### 2. PyPI (production)
+
+1. Create an account at https://pypi.org/
+2. Go to **Account Settings → Publishing**
+3. Click **Add a new pending publisher**
+4. Fill in:
+   - **PyPI Project Name**: `sci-hub-mcp-server`
+   - **Owner**: `Debvex`
+   - **Repository name**: `Sci-Hub-MCP-Server`
+   - **Workflow name**: `publish.yml`
+   - **Environment name**: `pypi`
+5. Click **Add**
+
+### Release process
+
+**Staging release (TestPyPI):**
+```bash
+git commit -m "fix: improve DNS fallback"
+git push origin main
+```
+The workflow uploads to TestPyPI automatically. Verify at https://test.pypi.org/project/sci-hub-mcp-server/
+
+**Production release (PyPI):**
+```bash
+# Update version in __init__.py and pyproject.toml first
+git add .
+git commit -m "release: v0.1.1"
+git tag v0.1.1
+git push origin main --tags
+```
+The tag push triggers the PyPI job.
+
+### Manual trigger
+
+Go to **Actions → Publish Python Package → Run workflow** and select the target.
+
+---
+
 ## License
 
 GPL-3.0-or-later. See `LICENSE` for details.
