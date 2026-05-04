@@ -461,51 +461,51 @@ from sci_hub_mcp_server.sci_hub_search import (
 def test_constants():
     assert isinstance(WORKING_SCIHUB_DOMAINS, list)
     assert len(WORKING_SCIHUB_DOMAINS) > 0
-    print("✅ WORKING_SCIHUB_DOMAINS")
+    print("WORKING_SCIHUB_DOMAINS is working...")
 
 def test_dns_resolution():
     ip = resolve_domain(WORKING_SCIHUB_DOMAINS[0])
     assert isinstance(ip, str)
     parts = ip.split(".")
     assert len(parts) == 4
-    print(f"✅ resolve_domain -> {ip}")
+    print(f"resolve_domain -> {ip} is working...")
 
 def test_proxy_config():
     # Returns None if no env vars are set (normal case)
     cfg = get_proxy_config()
     assert cfg is None or isinstance(cfg, dict)
-    print(f"✅ get_proxy_config -> {cfg}")
+    print(f"get_proxy_config -> {cfg} is working...")
 
 def test_adapter():
     import requests
     adapter = DNSOverHTTPSAdapter({"sci-hub.st": "186.2.163.201"})
     assert isinstance(adapter, requests.adapters.HTTPAdapter)
-    print("✅ DNSOverHTTPSAdapter instantiation")
+    print("DNSOverHTTPSAdapter instantiation is working...")
 
 def test_create_instance():
     sh = create_scihub_instance()
     assert sh is not None
     assert hasattr(sh, "session")
-    print("✅ create_scihub_instance")
+    print("create_scihub_instance is working...")
 
 def test_search_by_doi():
     result = search_paper_by_doi("10.1002/jcad.12075")
     assert result["status"] in ("success", "not_found")
     if result["status"] == "success":
         assert result["pdf_url"].startswith("http")
-    print(f"✅ search_paper_by_doi -> {result['status']}")
+    print(f"search_paper_by_doi -> {result['status']}")
 
 def test_search_by_title():
     result = search_paper_by_title(
         "Choosing Assessment Instruments for Posttraumatic Stress Disorder Screening"
     )
     assert result["status"] in ("success", "not_found")
-    print(f"✅ search_paper_by_title -> {result['status']}")
+    print(f"search_paper_by_title -> {result['status']}")
 
 def test_search_by_keyword():
     papers = search_papers_by_keyword("machine learning", num_results=2)
     assert isinstance(papers, list)
-    print(f"✅ search_papers_by_keyword -> {len(papers)} papers")
+    print(f"search_papers_by_keyword -> {len(papers)} papers works...")
 
 def test_download():
     result = search_paper_by_doi("10.1002/jcad.12075")
@@ -516,11 +516,11 @@ def test_download():
             size = os.path.getsize(out)
             assert size > 1024  # At least 1KB
             os.remove(out)
-            print(f"✅ download_paper -> {size} bytes")
+            print(f"download_paper -> {size} bytes")
         else:
-            print("⚠️ download_paper returned False (network/domain issue)")
+            print("download_paper returned False (network/domain issue)")
     else:
-        print("⚠️ Skipping download test — search failed")
+        print("Skipping download test — search failed")
 
 if __name__ == "__main__":
     print("Running sci-hub-mcp-server verification...\n")
@@ -533,7 +533,7 @@ if __name__ == "__main__":
     test_search_by_title()
     test_search_by_keyword()
     test_download()
-    print("\n🎉 Verification complete!")
+    print("\nVerification complete!")
 ```
 
 Run it:
