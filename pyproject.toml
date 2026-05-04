@@ -1,6 +1,6 @@
 [project]
 name = "sci-hub-mcp-server"
-version = "0.1.0"
+version = "0.1.1"
 description = """A Model Context Protocol (MCP) server that enables AI assistants to search, retrieve metadata, and download academic papers directly from Sci-Hub.
 The improvements are PERMANENT DOMAIN SAFEGUARD, DNS-OVER-HTTPS FALLBACK - BYPASS ISP DNS BLOCKING, PROXY SUPPORT, CUSTOM HTTP ADAPTER FOR IP-BASED CONNECTIONS"""
 readme = "README.md"

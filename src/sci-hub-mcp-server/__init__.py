@@ -1,6 +1,6 @@
 """Sci-Hub MCP Server — A robust library and MCP server for searching and downloading academic papers."""
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 from sci_hub_mcp_server.sci_hub_search import (
     WORKING_SCIHUB_DOMAINS,
