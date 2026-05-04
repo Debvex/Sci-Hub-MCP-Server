@@ -27,6 +27,10 @@ logger = logging.getLogger(__name__)
 # Update this list when domains change. Test new domains before updating.
 # Last verified: 2026-05-01
 WORKING_SCIHUB_DOMAINS = [
+    "sci-hub.su",
+    "sci-hub.red",
+    "sci-hub.ren"
+    "sci-hub.ru"
     "sci-hub.st",  # 186.2.163.201 - primary
     "sci-hub.box",  # 190.115.31.76 - fallback
 ]
