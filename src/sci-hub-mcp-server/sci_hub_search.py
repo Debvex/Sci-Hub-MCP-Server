@@ -172,15 +172,21 @@ class DNSOverHTTPSAdapter(HTTPAdapter):
             else:
                 request.headers['Host'] = hostname
         
-        kwargs['verify'] = False
-        return super().send(request, **kwargs)
+        kwargs_copy = dict(kwargs)
+        kwargs_copy['verify'] = False
+        return super().send(request, **kwargs_copy)
 
 # Fix Windows cp1252 encoding - use PYTHONUTF8=1 or reconfigure instead of
 # TextIOWrapper which conflicts with FastMCP's stdio handling
 if sys.platform == 'win32':
-    os.environ["PYTHONUTF8"] = "1"
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    try:
+        import io
+        if isinstance(sys.stdout, io.TextIOWrapper):
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        if isinstance(sys.stderr, io.TextIOWrapper):
+            sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError):
+        pass
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -232,7 +238,7 @@ def _fetch_single_domain(sh, identifier, domain):
     """Fetch paper from a specific domain without retry logic."""
     from scihub import logger as scihub_logger
     import logging
-    from requests.packages.urllib3.exceptions import IncompleteRead
+    from urllib3.exceptions import IncompleteRead
     import re
     
     scihub_logger.setLevel(logging.WARNING)
@@ -243,7 +249,7 @@ def _fetch_single_domain(sh, identifier, domain):
     
     for retry in range(3):
         try:
-            res = sh.session.get(url, verify=False, timeout=sh.timeout, stream=True)
+            res = sh.session.get(url, verify=False, timeout=sh.timeout)
             res.raise_for_status()
             content = res.content
             text = res.text
@@ -340,17 +346,27 @@ def search_paper_by_doi(doi):
     }
 
 def search_paper_by_title(title):
-    
     try:
         url = f"https://api.crossref.org/works?query.title={title}&rows=1"
         response = requests.get(url)
         if response.status_code == 200:
             data = response.json()
             if data['message']['items']:
-                doi = data['message']['items'][0]['DOI']
-                return search_paper_by_doi(doi)
+                item = data['message']['items'][0]
+                doi = item['DOI']
+                result = search_paper_by_doi(doi)
+                # Preserve CrossRef metadata since Sci-Hub search returns empty metadata
+                if result['status'] == 'success':
+                    result['doi'] = doi
+                    result.setdefault('title', item.get('title', [''])[0] if isinstance(item.get('title'), list) else item.get('title', ''))
+                    result.setdefault('author', ', '.join(
+                        f"{a.get('given', '')} {a.get('family', '')}".strip()
+                        for a in item.get('author', [])
+                    ))
+                    result.setdefault('year', str(item.get('published-print', {}).get('date-parts', [[None]])[0][0] or item.get('published-online', {}).get('date-parts', [[None]])[0][0] or ''))
+                return result
     except Exception as e:
-        print(f"CrossRef search error: {str(e)}")
+        logger.error(f"CrossRef search error: {e}")
     
     return {
         'title': title,
@@ -358,7 +374,6 @@ def search_paper_by_title(title):
     }
 
 def search_papers_by_keyword(keyword, num_results=10):
-    
     papers = []
     try:
         url = f"https://api.crossref.org/works?query={keyword}&rows={num_results}"
@@ -370,20 +385,29 @@ def search_papers_by_keyword(keyword, num_results=10):
                 if doi:
                     result = search_paper_by_doi(doi)
                     if result['status'] == 'success':
+                        # Preserve CrossRef metadata since Sci-Hub returns empty metadata
+                        result.setdefault('title', item.get('title', [''])[0] if isinstance(item.get('title'), list) else item.get('title', ''))
+                        result.setdefault('author', ', '.join(
+                            f"{a.get('given', '')} {a.get('family', '')}".strip()
+                            for a in item.get('author', [])
+                        ))
+                        result.setdefault('year', str(item.get('published-print', {}).get('date-parts', [[None]])[0][0] or item.get('published-online', {}).get('date-parts', [[None]])[0][0] or ''))
                         papers.append(result)
     except Exception as e:
-        print(f"Search error: {str(e)}")
+        logger.error(f"Search error: {e}")
     
     return papers
 
 def download_paper(pdf_url, output_path):
-   
-    sh = SciHub()
+    sh = create_scihub_instance()
     try:
-        sh.download(pdf_url, output_path)
+        response = sh.session.get(pdf_url, verify=False, timeout=sh.timeout)
+        response.raise_for_status()
+        with open(output_path, 'wb') as f:
+            f.write(response.content)
         return True
     except Exception as e:
-        print(f"Download error: {str(e)}")
+        logger.error(f"Download error: {e}")
         return False
 
 

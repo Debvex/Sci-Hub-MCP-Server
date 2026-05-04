@@ -4,17 +4,8 @@ import logging
 import sys
 import os
 
-# Fix Windows cp1252 encoding - use PYTHONUTF8=1 or reconfigure instead of
-# TextIOWrapper which conflicts with FastMCP's stdio handling
-if sys.platform == 'win32':
-    # Method 1: Set environment variable (affects subprocess too)
-    os.environ["PYTHONUTF8"] = "1"
-    # Method 2: Reconfigure existing streams (Python 3.7+, safe with FastMCP)
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
-
 from mcp.server.fastmcp import FastMCP
-from src.sci_hub_search import search_paper_by_doi, search_paper_by_title, search_papers_by_keyword, download_paper
+from .sci_hub_search import search_paper_by_doi, search_paper_by_title, search_papers_by_keyword, download_paper
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

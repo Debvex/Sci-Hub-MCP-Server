@@ -4,19 +4,19 @@ version = "0.1.0"
 description = """A Model Context Protocol (MCP) server that enables AI assistants to search, retrieve metadata, and download academic papers directly from Sci-Hub.
 The improvements are PERMANENT DOMAIN SAFEGUARD, DNS-OVER-HTTPS FALLBACK - BYPASS ISP DNS BLOCKING, PROXY SUPPORT, CUSTOM HTTP ADAPTER FOR IP-BASED CONNECTIONS"""
 readme = "README.md"
-requires-python = ">=3.14"
-license = {text = "GNU"}
+requires-python = ">=3.11"
+license = {text = "GPL-3.0-or-later"}
 authors = [
     {name = "Debmalya Sett", email = "settdebmalya273@gmail.com"}
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: GNU License",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "bs4>=0.0.1",
-    "mcp>=0.1.0",
+    "beautifulsoup4>=4.11.0",
+    "mcp>=1.0.0",
     "requests>=2.31.0",
     "scihub>=0.0.1",
 ]
