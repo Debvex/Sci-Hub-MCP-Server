@@ -2,6 +2,7 @@
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPL%20v3+-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![MCP Server](https://img.shields.io/badge/MCP-Server-1e1e1e)](https://modelcontextprotocol.io)
 
 A robust [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server and Python library that enables AI assistants and developers to search, retrieve metadata, and download academic papers directly from Sci-Hub. Built with resilience against DNS blocking, ISP censorship, and outdated domain lists.
 
